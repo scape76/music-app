@@ -11,15 +11,38 @@ datasource db {
 }
 
 model Post {
-  id          String @id @default(uuid())
-  description String
+  id       String  @id @default(uuid())
+  fileKey  String
+  imageKey String?
+  name     String
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Favourite Favorite[]
 }
 
 model User {
-  id       String    @id @default(uuid())
-  email    String    @unique
+  id       String  @id @default(uuid())
+  email    String  @unique
   password String?
+  post     Post[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Favourite Favorite[]
+}
+
+model Favorite {
+  id String @id @default(uuid())
+
+  userId String
+
+  postId String
+  Post   Post   @relation(fields: [postId], references: [id])
+  User   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, postId])
 }

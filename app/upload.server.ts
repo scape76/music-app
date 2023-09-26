@@ -5,6 +5,7 @@ import { Upload } from "@aws-sdk/lib-storage";
 const Bucket = process.env.S3_BUCKET;
 
 invariant(process.env.S3_BUCKET, "S3_BUCKET must be set");
+const isDev = process.env.NODE_ENV === "development";
 
 async function concatenateAsyncUint8Arrays(
   asyncIterable: AsyncIterable<Uint8Array>
@@ -35,16 +36,25 @@ async function concatenateAsyncUint8Arrays(
   return result;
 }
 
-export async function uploadToS3Bucket(data: AsyncIterable<Uint8Array>, filename: string) {
+export async function uploadToS3Bucket(
+  data: AsyncIterable<Uint8Array>,
+  filename: string
+) {
   const result = await concatenateAsyncUint8Arrays(data);
 
-  new Upload({
+  const Key = isDev
+    ? `${Date.now().toString()}-${filename}`
+    : `public/${Date.now().toString()}-${filename}`;
+
+  const res = await new Upload({
     client,
     params: {
       ACL: "public-read",
-      Bucket,
-      Key: `${Date.now().toString()}-${filename}`,
+      Bucket: "music-app-bucket",
+      Key,
       Body: result,
     },
-  });
+  }).done();
+
+  return res;
 }

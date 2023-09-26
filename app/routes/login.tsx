@@ -20,7 +20,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return {
         status: 404,
         errors: {
-          email: "Invalid email or password",
+          email: "User with such email doesn't exist",
           password: null,
         },
       };

@@ -9,10 +9,6 @@ app.use(express.static("public"));
 
 app.all("*", createRequestHandler({ build }));
 
-const a = [2, 3, 4];
-
-debugger;
-
 app.listen(3000, () => {
   if (process.env.NODE_END === "development") {
     broadcastDevReady(build);
